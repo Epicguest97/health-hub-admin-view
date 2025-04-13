@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import MainLayout from "@/components/layout/MainLayout";
@@ -11,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const Patients = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [genderFilter, setGenderFilter] = useState("all"); // Add this state
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
@@ -43,15 +43,21 @@ const Patients = () => {
     fetchPatients();
   }, [toast]);
 
-  // Filter patients based on search query
+  // Filter patients based on search query and gender
   const filteredPatients = patients.filter((patient) => {
     const fullName = `${patient.first_name} ${patient.last_name}`.toLowerCase();
-    return (
+    
+    // Search query filter
+    const matchesSearch = 
       fullName.includes(searchQuery.toLowerCase()) ||
       (patient.email && patient.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (patient.id && patient.id.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (patient.phone && patient.phone.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
+      (patient.phone && patient.phone.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    // Gender filter
+    const matchesGender = genderFilter === "all" || patient.gender.toLowerCase() === genderFilter.toLowerCase();
+    
+    return matchesSearch && matchesGender;
   });
 
   return (
@@ -67,7 +73,10 @@ const Patients = () => {
       </div>
       
       <div className="space-y-6">
-        <PatientSearchbar onSearch={setSearchQuery} />
+        <PatientSearchbar 
+          onSearch={setSearchQuery} 
+          onGenderFilter={setGenderFilter} 
+        />
         
         {isLoading ? (
           <div className="flex justify-center p-8">

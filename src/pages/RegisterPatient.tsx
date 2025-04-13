@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "@/components/layout/MainLayout";
@@ -8,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Select, 
   SelectContent, 
@@ -46,7 +46,6 @@ const formSchema = z.object({
   insurancePolicyNumber: z.string().optional(),
   medicalHistory: z.string().optional(),
   allergies: z.string().optional(),
-  currentMedications: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -76,25 +75,57 @@ const RegisterPatient = () => {
       insurancePolicyNumber: "",
       medicalHistory: "",
       allergies: "",
-      currentMedications: "",
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Form submitted:", data);
+    try {
+      // Format full address
+      const fullAddress = `${data.address}, ${data.city}, ${data.state} ${data.zipCode}`;
+      
+      // Insert data into patients table - only include fields in the schema
+      const { data: insertedPatient, error } = await supabase
+        .from('patients')
+        .insert([
+          {
+            first_name: data.firstName,
+            last_name: data.lastName,
+            gender: data.gender,
+            date_of_birth: data.dateOfBirth,
+            email: data.email,
+            phone: data.phone,
+            address: fullAddress,
+            emergency_contact: data.emergencyContactName,
+            emergency_phone: data.emergencyContactPhone,
+            // emergency_relation removed - not in schema
+            // insurance_provider removed - not in schema
+            // insurance_policy_number removed - not in schema
+            allergies: data.allergies,
+            // medical_history is not in the schema either
+          }
+        ])
+        .select();
+      
+      if (error) throw error;
       
       toast({
         title: "Patient registered successfully",
-        description: `${data.firstName} ${data.lastName} has been registered.`,
+        description: `${data.firstName} ${data.lastName} has been added to the database.`,
       });
       
-      setIsSubmitting(false);
       navigate("/patients");
-    }, 1500);
+    } catch (error: any) {
+      toast({
+        title: "Registration failed",
+        description: error.message || "Could not register patient",
+        variant: "destructive",
+      });
+      console.error("Error registering patient:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -388,24 +419,6 @@ const RegisterPatient = () => {
                       <FormControl>
                         <Textarea 
                           placeholder="List any allergies..."
-                          className="min-h-24"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="currentMedications"
-                  render={({ field }) => (
-                    <FormItem className="col-span-2">
-                      <FormLabel>Current Medications</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="List current medications and dosages..."
                           className="min-h-24"
                           {...field}
                         />

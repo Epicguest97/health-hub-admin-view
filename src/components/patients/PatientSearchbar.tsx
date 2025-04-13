@@ -1,4 +1,3 @@
-
 import { Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,9 +11,10 @@ import {
 
 interface PatientSearchbarProps {
   onSearch: (query: string) => void;
+  onGenderFilter: (gender: string) => void; // Add this prop
 }
 
-const PatientSearchbar = ({ onSearch }: PatientSearchbarProps) => {
+const PatientSearchbar = ({ onSearch, onGenderFilter }: PatientSearchbarProps) => {
   return (
     <div className="flex flex-col sm:flex-row gap-3">
       <div className="relative flex-1">
@@ -26,7 +26,10 @@ const PatientSearchbar = ({ onSearch }: PatientSearchbarProps) => {
         />
       </div>
       <div className="flex gap-3">
-        <Select defaultValue="all">
+        <Select 
+          defaultValue="all"
+          onValueChange={(value) => onGenderFilter(value)}
+        >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Gender" />
           </SelectTrigger>
