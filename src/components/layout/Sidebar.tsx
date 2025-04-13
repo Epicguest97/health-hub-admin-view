@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -64,11 +63,6 @@ const Sidebar = ({ className }: SidebarProps) => {
       name: "Billing", 
       icon: <CreditCard className="h-5 w-5" />, 
       path: "/billing" 
-    },
-    { 
-      name: "Settings", 
-      icon: <Settings className="h-5 w-5" />, 
-      path: "/settings" 
     },
   ];
 

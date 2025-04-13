@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,7 +10,8 @@ import Dashboard from "./pages/Dashboard";
 import Patients from "./pages/Patients";
 import RegisterPatient from "./pages/RegisterPatient"; 
 import Staff from "./pages/Staff";
-import RegisterStaff from "./pages/RegisterStaff"; // Add this import
+import RegisterStaff from "./pages/RegisterStaff";
+import MedicalRecords from "./pages/MedicalRecords";
 import Billing from "./pages/Billing";
 import NotFound from "./pages/NotFound";
 
@@ -27,7 +29,8 @@ const App = () => (
           <Route path="/patients" element={<Patients />} />
           <Route path="/register-patient" element={<RegisterPatient />} />
           <Route path="/staff" element={<Staff />} />
-          <Route path="/register-staff" element={<RegisterStaff />} /> {/* Add this route */}
+          <Route path="/register-staff" element={<RegisterStaff />} />
+          <Route path="/medical-records" element={<MedicalRecords />} />
           <Route path="/billing" element={<Billing />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
