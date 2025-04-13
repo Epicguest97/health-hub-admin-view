@@ -1,5 +1,5 @@
 
-import { Search } from "lucide-react";
+import { Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { 
@@ -20,7 +20,7 @@ const PatientSearchbar = ({ onSearch }: PatientSearchbarProps) => {
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input 
-          placeholder="Search patients..." 
+          placeholder="Search by name, email, ID, or phone..." 
           className="pl-9"
           onChange={(e) => onSearch(e.target.value)}
         />
@@ -28,16 +28,19 @@ const PatientSearchbar = ({ onSearch }: PatientSearchbarProps) => {
       <div className="flex gap-3">
         <Select defaultValue="all">
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Status" />
+            <SelectValue placeholder="Gender" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            <SelectItem value="admitted">Admitted</SelectItem>
-            <SelectItem value="outpatient">Outpatient</SelectItem>
-            <SelectItem value="discharged">Discharged</SelectItem>
+            <SelectItem value="all">All Genders</SelectItem>
+            <SelectItem value="male">Male</SelectItem>
+            <SelectItem value="female">Female</SelectItem>
+            <SelectItem value="other">Other</SelectItem>
           </SelectContent>
         </Select>
-        <Button>Filter</Button>
+        <Button>
+          <Filter className="mr-2 h-4 w-4" />
+          Filter
+        </Button>
       </div>
     </div>
   );

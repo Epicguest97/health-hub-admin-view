@@ -49,7 +49,8 @@ const Patients = () => {
     return (
       fullName.includes(searchQuery.toLowerCase()) ||
       (patient.email && patient.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (patient.id && patient.id.toLowerCase().includes(searchQuery.toLowerCase()))
+      (patient.id && patient.id.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (patient.phone && patient.phone.toLowerCase().includes(searchQuery.toLowerCase()))
     );
   });
 
