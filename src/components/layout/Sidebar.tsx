@@ -56,6 +56,11 @@ const Sidebar = ({ className }: SidebarProps) => {
       path: "/staff" 
     },
     { 
+      name: "Register Staff", 
+      icon: <UserCog className="h-5 w-5" />, 
+      path: "/register-staff" 
+    },
+    { 
       name: "Billing", 
       icon: <CreditCard className="h-5 w-5" />, 
       path: "/billing" 

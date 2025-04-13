@@ -1,44 +1,12 @@
-
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import MainLayout from "@/components/layout/MainLayout";
-import { Search, Plus, MoreHorizontal, Mail, Phone } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { formatDate } from "@/lib/utils";
-
-interface StaffMember {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone?: string;
-  role: string;
-  department_id?: string;
-  department_name?: string;
-  hire_date: string;
-  status: string; // Changed from specific union type to string to match database
-  address?: string;
-  created_at: string;
-  updated_at: string;
-}
+import StaffSearchbar from "@/components/staff/StaffSearchbar";
+import StaffTable, { StaffMember } from "@/components/staff/StaffTable";
 
 const Staff = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -115,114 +83,31 @@ const Staff = () => {
     <MainLayout title="Staff Management">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Staff Directory</h1>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Staff Member
+        <Button asChild>
+          <Link to="/register-staff">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Staff Member
+          </Link>
         </Button>
       </div>
       
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input 
-            placeholder="Search staff members..." 
-            className="pl-9"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <div>
-          <Select 
-            defaultValue="all" 
-            onValueChange={(value) => setDepartmentFilter(value)}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Department" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Departments</SelectItem>
-              {departments.map((department) => (
-                <SelectItem key={department.id} value={department.name.toLowerCase()}>
-                  {department.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      
-      {isLoading ? (
-        <div className="flex justify-center p-8">
-          <div className="animate-pulse text-center">
-            <p className="text-muted-foreground">Loading staff data...</p>
+      <div className="space-y-6">
+        <StaffSearchbar 
+          onSearch={setSearchQuery}
+          onDepartmentFilter={setDepartmentFilter}
+          departments={departments}
+        />
+        
+        {isLoading ? (
+          <div className="flex justify-center p-8">
+            <div className="animate-pulse text-center">
+              <p className="text-muted-foreground">Loading staff data...</p>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredStaff.map((staff) => (
-            <Card key={staff.id}>
-              <CardContent className="p-6">
-                <div className="flex justify-between">
-                  <Avatar className="h-16 w-16">
-                    <AvatarImage src="/placeholder.svg" alt={`${staff.first_name} ${staff.last_name}`} />
-                    <AvatarFallback className="text-lg">{staff.first_name.charAt(0)}{staff.last_name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Open menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>View Profile</DropdownMenuItem>
-                      <DropdownMenuItem>Edit Details</DropdownMenuItem>
-                      <DropdownMenuItem>Manage Schedule</DropdownMenuItem>
-                      <DropdownMenuItem>Change Status</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-                
-                <div className="mt-4">
-                  <h3 className="font-semibold text-lg">{staff.first_name} {staff.last_name}</h3>
-                  <p className="text-muted-foreground">{staff.role}</p>
-                </div>
-                
-                <div className="mt-3">
-                  <Badge 
-                    variant={
-                      staff.status === "Active" 
-                        ? "default" 
-                        : staff.status === "On Leave" 
-                          ? "outline" 
-                          : "secondary"
-                    }
-                  >
-                    {staff.status}
-                  </Badge>
-                  <p className="text-sm mt-2">{staff.department_name}</p>
-                </div>
-                
-                <div className="mt-4 space-y-2">
-                  <div className="flex items-center text-sm">
-                    <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span className="text-muted-foreground">{staff.email}</span>
-                  </div>
-                  {staff.phone && (
-                    <div className="flex items-center text-sm">
-                      <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
-                      <span className="text-muted-foreground">{staff.phone}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center text-sm">
-                    <span className="text-muted-foreground">Hired: {formatDate(staff.hire_date)}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+        ) : (
+          <StaffTable staffMembers={filteredStaff} />
+        )}
+      </div>
     </MainLayout>
   );
 };
