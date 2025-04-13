@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Search, Plus, MoreHorizontal, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,114 +20,96 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { formatDate } from "@/lib/utils";
 
 interface StaffMember {
   id: string;
-  name: string;
-  role: string;
-  department: string;
+  first_name: string;
+  last_name: string;
   email: string;
-  phone: string;
+  phone?: string;
+  role: string;
+  department_id?: string;
+  department_name?: string;
+  hire_date: string;
   status: "Active" | "On Leave" | "Terminated";
-  imageUrl?: string;
+  address?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 const Staff = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("all");
+  const [staffMembers, setStaffMembers] = useState<StaffMember[]>([]);
+  const [departments, setDepartments] = useState<{id: string, name: string}[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
   
-  // Mock staff data
-  const staffMembers: StaffMember[] = [
-    {
-      id: "S-001",
-      name: "Dr. Robert Chen",
-      role: "Cardiologist",
-      department: "Cardiology",
-      email: "robert.chen@healthadmin.com",
-      phone: "(555) 123-0001",
-      status: "Active"
-    },
-    {
-      id: "S-002",
-      name: "Dr. Sarah Johnson",
-      role: "Neurologist",
-      department: "Neurology",
-      email: "sarah.johnson@healthadmin.com",
-      phone: "(555) 123-0002",
-      status: "Active"
-    },
-    {
-      id: "S-003",
-      name: "Dr. James Williams",
-      role: "Orthopedic Surgeon",
-      department: "Orthopedics",
-      email: "james.williams@healthadmin.com",
-      phone: "(555) 123-0003",
-      status: "On Leave"
-    },
-    {
-      id: "S-004",
-      name: "Dr. Lisa Brown",
-      role: "Dermatologist",
-      department: "Dermatology",
-      email: "lisa.brown@healthadmin.com",
-      phone: "(555) 123-0004",
-      status: "Active"
-    },
-    {
-      id: "S-005",
-      name: "Nurse Amanda Davis",
-      role: "Head Nurse",
-      department: "Cardiology",
-      email: "amanda.davis@healthadmin.com",
-      phone: "(555) 123-0005",
-      status: "Active"
-    },
-    {
-      id: "S-006",
-      name: "Nurse Michael Wong",
-      role: "RN",
-      department: "Emergency",
-      email: "michael.wong@healthadmin.com",
-      phone: "(555) 123-0006",
-      status: "Active"
-    },
-    {
-      id: "S-007",
-      name: "Dr. Emily Rodriguez",
-      role: "Pediatrician",
-      department: "Pediatrics",
-      email: "emily.rodriguez@healthadmin.com",
-      phone: "(555) 123-0007",
-      status: "Active"
-    },
-    {
-      id: "S-008",
-      name: "Dr. David Kim",
-      role: "Pulmonologist",
-      department: "Pulmonology",
-      email: "david.kim@healthadmin.com",
-      phone: "(555) 123-0008",
-      status: "Terminated"
-    }
-  ];
+  useEffect(() => {
+    const fetchStaffAndDepartments = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch departments
+        const { data: departmentsData, error: departmentsError } = await supabase
+          .from('departments')
+          .select('id, name');
+        
+        if (departmentsError) {
+          throw departmentsError;
+        }
+        
+        setDepartments(departmentsData || []);
+        
+        // Fetch staff with department information
+        const { data: staffData, error: staffError } = await supabase
+          .from('staff')
+          .select(`
+            *,
+            departments:department_id (name)
+          `);
+        
+        if (staffError) {
+          throw staffError;
+        }
+        
+        // Transform the data to include department_name
+        const transformedStaff = staffData?.map(staff => ({
+          ...staff,
+          department_name: staff.departments?.name || 'Unassigned'
+        })) || [];
+        
+        setStaffMembers(transformedStaff);
+      } catch (error: any) {
+        toast({
+          title: "Failed to load staff data",
+          description: error.message,
+          variant: "destructive",
+        });
+        console.error('Error fetching staff data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchStaffAndDepartments();
+  }, [toast]);
 
   // Filter staff members based on search query and department filter
   const filteredStaff = staffMembers.filter((staff) => {
     const matchesSearch = 
-      staff.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      `${staff.first_name} ${staff.last_name}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
       staff.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
       staff.email.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesDepartment = 
       departmentFilter === "all" || 
-      staff.department.toLowerCase() === departmentFilter.toLowerCase();
+      staff.department_name?.toLowerCase() === departmentFilter.toLowerCase();
     
     return matchesSearch && matchesDepartment;
   });
-
-  // Get unique departments for filter
-  const departments = [...new Set(staffMembers.map(staff => staff.department))];
 
   return (
     <MainLayout title="Staff Management">
@@ -160,8 +142,8 @@ const Staff = () => {
             <SelectContent>
               <SelectItem value="all">All Departments</SelectItem>
               {departments.map((department) => (
-                <SelectItem key={department} value={department.toLowerCase()}>
-                  {department}
+                <SelectItem key={department.id} value={department.name.toLowerCase()}>
+                  {department.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -169,65 +151,78 @@ const Staff = () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredStaff.map((staff) => (
-          <Card key={staff.id}>
-            <CardContent className="p-6">
-              <div className="flex justify-between">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={staff.imageUrl || "/placeholder.svg"} alt={staff.name} />
-                  <AvatarFallback className="text-lg">{staff.name.charAt(0)}{staff.name.split(' ')[1]?.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MoreHorizontal className="h-4 w-4" />
-                      <span className="sr-only">Open menu</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>View Profile</DropdownMenuItem>
-                    <DropdownMenuItem>Edit Details</DropdownMenuItem>
-                    <DropdownMenuItem>Manage Schedule</DropdownMenuItem>
-                    <DropdownMenuItem>Change Status</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-              
-              <div className="mt-4">
-                <h3 className="font-semibold text-lg">{staff.name}</h3>
-                <p className="text-muted-foreground">{staff.role}</p>
-              </div>
-              
-              <div className="mt-3">
-                <Badge 
-                  variant={
-                    staff.status === "Active" 
-                      ? "default" 
-                      : staff.status === "On Leave" 
-                        ? "outline" 
-                        : "secondary"
-                  }
-                >
-                  {staff.status}
-                </Badge>
-                <p className="text-sm mt-2">{staff.department}</p>
-              </div>
-              
-              <div className="mt-4 space-y-2">
-                <div className="flex items-center text-sm">
-                  <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span className="text-muted-foreground">{staff.email}</span>
+      {isLoading ? (
+        <div className="flex justify-center p-8">
+          <div className="animate-pulse text-center">
+            <p className="text-muted-foreground">Loading staff data...</p>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredStaff.map((staff) => (
+            <Card key={staff.id}>
+              <CardContent className="p-6">
+                <div className="flex justify-between">
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage src="/placeholder.svg" alt={`${staff.first_name} ${staff.last_name}`} />
+                    <AvatarFallback className="text-lg">{staff.first_name.charAt(0)}{staff.last_name.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreHorizontal className="h-4 w-4" />
+                        <span className="sr-only">Open menu</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>View Profile</DropdownMenuItem>
+                      <DropdownMenuItem>Edit Details</DropdownMenuItem>
+                      <DropdownMenuItem>Manage Schedule</DropdownMenuItem>
+                      <DropdownMenuItem>Change Status</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
-                <div className="flex items-center text-sm">
-                  <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span className="text-muted-foreground">{staff.phone}</span>
+                
+                <div className="mt-4">
+                  <h3 className="font-semibold text-lg">{staff.first_name} {staff.last_name}</h3>
+                  <p className="text-muted-foreground">{staff.role}</p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                
+                <div className="mt-3">
+                  <Badge 
+                    variant={
+                      staff.status === "Active" 
+                        ? "default" 
+                        : staff.status === "On Leave" 
+                          ? "outline" 
+                          : "secondary"
+                    }
+                  >
+                    {staff.status}
+                  </Badge>
+                  <p className="text-sm mt-2">{staff.department_name}</p>
+                </div>
+                
+                <div className="mt-4 space-y-2">
+                  <div className="flex items-center text-sm">
+                    <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <span className="text-muted-foreground">{staff.email}</span>
+                  </div>
+                  {staff.phone && (
+                    <div className="flex items-center text-sm">
+                      <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
+                      <span className="text-muted-foreground">{staff.phone}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center text-sm">
+                    <span className="text-muted-foreground">Hired: {formatDate(staff.hire_date)}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </MainLayout>
   );
 };
