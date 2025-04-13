@@ -34,7 +34,7 @@ interface StaffMember {
   department_id?: string;
   department_name?: string;
   hire_date: string;
-  status: "Active" | "On Leave" | "Terminated";
+  status: string; // Changed from specific union type to string to match database
   address?: string;
   created_at: string;
   updated_at: string;
@@ -81,7 +81,7 @@ const Staff = () => {
           department_name: staff.departments?.name || 'Unassigned'
         })) || [];
         
-        setStaffMembers(transformedStaff);
+        setStaffMembers(transformedStaff as StaffMember[]);
       } catch (error: any) {
         toast({
           title: "Failed to load staff data",
