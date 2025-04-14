@@ -35,7 +35,7 @@ const Header = ({ title }: HeaderProps) => {
               </div>
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            {/* <DropdownMenuItem>
               Profile
             </DropdownMenuItem>
             <DropdownMenuItem>
@@ -44,7 +44,7 @@ const Header = ({ title }: HeaderProps) => {
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               Log out
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
