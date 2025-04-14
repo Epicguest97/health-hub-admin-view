@@ -85,27 +85,25 @@ const RegisterPatient = () => {
       // Format full address
       const fullAddress = `${data.address}, ${data.city}, ${data.state} ${data.zipCode}`;
       
-      // Insert data into patients table - only include fields in the schema
+      // Convert phone to number if needed (or keep as string since we updated the interface)
+      const phoneValue = data.phone;
+      
+      // Insert data into patients table - make sure we're passing a single object, not an array
       const { data: insertedPatient, error } = await supabase
         .from('patients')
-        .insert([
-          {
-            first_name: data.firstName,
-            last_name: data.lastName,
-            gender: data.gender,
-            date_of_birth: data.dateOfBirth,
-            email: data.email,
-            phone: data.phone,
-            address: fullAddress,
-            emergency_contact: data.emergencyContactName,
-            emergency_phone: data.emergencyContactPhone,
-            // emergency_relation removed - not in schema
-            // insurance_provider removed - not in schema
-            // insurance_policy_number removed - not in schema
-            allergies: data.allergies,
-            // medical_history is not in the schema either
-          }
-        ])
+        .insert({
+          first_name: data.firstName,
+          last_name: data.lastName,
+          gender: data.gender,
+          date_of_birth: data.dateOfBirth,
+          email: data.email,
+          phone: phoneValue,
+          address: fullAddress,
+          emergency_contact: data.emergencyContactName,
+          emergency_phone: data.emergencyContactPhone,
+          allergies: data.allergies
+          // Note: Other fields like emergency_relation not in schema
+        })
         .select();
       
       if (error) throw error;

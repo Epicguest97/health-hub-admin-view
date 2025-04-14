@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const Patients = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [genderFilter, setGenderFilter] = useState("all"); // Add this state
+  const [genderFilter, setGenderFilter] = useState("all");
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
@@ -27,7 +27,7 @@ const Patients = () => {
           throw error;
         }
         
-        setPatients(data || []);
+        setPatients(data as Patient[] || []);
       } catch (error: any) {
         toast({
           title: "Failed to load patients",
@@ -43,18 +43,15 @@ const Patients = () => {
     fetchPatients();
   }, [toast]);
 
-  // Filter patients based on search query and gender
   const filteredPatients = patients.filter((patient) => {
     const fullName = `${patient.first_name} ${patient.last_name}`.toLowerCase();
     
-    // Search query filter
     const matchesSearch = 
       fullName.includes(searchQuery.toLowerCase()) ||
       (patient.email && patient.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (patient.id && patient.id.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (patient.phone && patient.phone.toLowerCase().includes(searchQuery.toLowerCase()));
+      (patient.phone && String(patient.phone).toLowerCase().includes(searchQuery.toLowerCase()));
     
-    // Gender filter
     const matchesGender = genderFilter === "all" || patient.gender.toLowerCase() === genderFilter.toLowerCase();
     
     return matchesSearch && matchesGender;
