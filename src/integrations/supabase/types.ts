@@ -216,7 +216,7 @@ export type Database = {
           gender: string
           id: string
           last_name: string
-          phone: string | null
+          phone: number | null
           updated_at: string
         }
         Insert: {
@@ -232,7 +232,7 @@ export type Database = {
           gender: string
           id?: string
           last_name: string
-          phone?: string | null
+          phone?: number | null
           updated_at?: string
         }
         Update: {
@@ -248,7 +248,7 @@ export type Database = {
           gender?: string
           id?: string
           last_name?: string
-          phone?: string | null
+          phone?: number | null
           updated_at?: string
         }
         Relationships: []

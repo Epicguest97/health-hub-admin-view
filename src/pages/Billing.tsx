@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
-import { Search, Filter, Download, ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { Search, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -19,7 +19,8 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import GenerateInvoiceDialog from "@/components/billing/GenerateInvoiceDialog";
 
 interface BillingRecord {
   id: string;
@@ -33,6 +34,7 @@ interface BillingRecord {
 
 const Billing = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showInvoiceDialog, setShowInvoiceDialog] = useState(false);
   
   // Mock billing data
   const billingRecords: BillingRecord[] = [
@@ -114,20 +116,19 @@ const Billing = () => {
   const totalPending = billingRecords.filter(record => record.status === "Pending").reduce((sum, record) => sum + record.amount, 0);
   const totalOverdue = billingRecords.filter(record => record.status === "Overdue").reduce((sum, record) => sum + record.amount, 0);
 
+  const handleAddInvoice = (newInvoice: BillingRecord) => {
+    // In a real application, this would be an API call to add the invoice to the database
+    console.log("New invoice added:", newInvoice);
+    setShowInvoiceDialog(false);
+    // For demo purposes only - we'd normally update the list from the database after adding
+  };
+
   return (
     <MainLayout title="Billing">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Billing Management</h1>
         <div className="flex gap-3">
-          <Button variant="outline">
-            <Filter className="mr-2 h-4 w-4" />
-            Filter
-          </Button>
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            Export
-          </Button>
-          <Button>Generate Invoice</Button>
+          <Button onClick={() => setShowInvoiceDialog(true)}>Generate Invoice</Button>
         </div>
       </div>
       
@@ -254,6 +255,12 @@ const Billing = () => {
           </TableBody>
         </Table>
       </div>
+      
+      <GenerateInvoiceDialog 
+        open={showInvoiceDialog} 
+        onClose={() => setShowInvoiceDialog(false)}
+        onSubmit={handleAddInvoice}
+      />
     </MainLayout>
   );
 };
