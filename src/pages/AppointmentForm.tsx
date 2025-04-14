@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import MainLayout from "@/components/layout/MainLayout";
@@ -52,7 +53,8 @@ const AppointmentForm = () => {
         description: "The appointment has been successfully scheduled.",
       });
 
-      navigate('/medical-records');
+      // Navigate to appointments page instead of medical records
+      navigate('/appointments');
     } catch (error: any) {
       toast({
         title: "Error scheduling appointment",
