@@ -86,7 +86,7 @@ const GenerateInvoiceDialog = ({ open, onClose, onSubmit }: GenerateInvoiceDialo
     }
   };
 
-  const handleGenerateInvoice = () => {
+  const handleGenerateInvoice = async () => {
     if (!selectedPatientId || !selectedTreatmentId) {
       toast({
         title: "Missing information",
@@ -116,32 +116,61 @@ const GenerateInvoiceDialog = ({ open, onClose, onSubmit }: GenerateInvoiceDialo
     // Generate a unique invoice ID
     const invoiceId = `B-${Math.floor(Math.random() * 10000).toString().padStart(3, '0')}`;
     
-    // Create the new invoice record
+    // Current date in ISO format for database
+    const currentDate = new Date().toISOString();
+    const formattedDate = new Date().toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric' 
+    });
+    
+    // Create the new invoice record for UI display
     const newInvoice: BillingRecord = {
       id: invoiceId,
       patientId: selectedPatient.id,
       patientName: `${selectedPatient.first_name} ${selectedPatient.last_name}`,
-      date: new Date().toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
-      }),
+      date: formattedDate,
       description: `${selectedTreatment.name} (Insurance discount: ${discountPercent}%)`,
       amount: finalAmount,
       status: "Pending"
     };
 
-    // Call the onSubmit callback with the new invoice
-    onSubmit(newInvoice);
-    
-    toast({
-      title: "Invoice generated",
-      description: `Invoice ${invoiceId} has been created for ${selectedPatient.first_name} ${selectedPatient.last_name}.`,
-    });
+    try {
+      // Insert into Supabase billing table
+      const { error } = await supabase
+        .from('billing')
+        .insert({
+          id: invoiceId,
+          patient_id: selectedPatient.id,
+          description: `${selectedTreatment.name} (Insurance discount: ${discountPercent}%)`,
+          amount: finalAmount,
+          payment_status: 'Pending',
+          billing_date: currentDate
+        });
 
-    // Reset form
-    setSelectedPatientId("");
-    setSelectedTreatmentId("");
+      if (error) {
+        throw error;
+      }
+
+      // Call the onSubmit callback with the new invoice
+      onSubmit(newInvoice);
+      
+      toast({
+        title: "Invoice generated",
+        description: `Invoice ${invoiceId} has been created for ${selectedPatient.first_name} ${selectedPatient.last_name}.`,
+      });
+
+      // Reset form
+      setSelectedPatientId("");
+      setSelectedTreatmentId("");
+    } catch (error: any) {
+      toast({
+        title: "Failed to create invoice",
+        description: error.message,
+        variant: "destructive",
+      });
+      console.error('Error creating invoice:', error);
+    }
   };
 
   return (
