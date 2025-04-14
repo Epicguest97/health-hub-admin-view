@@ -42,7 +42,7 @@ const Sidebar = ({ className }: SidebarProps) => {
     { 
       name: "Appointments", 
       icon: <CalendarClock className="h-5 w-5" />, 
-      path: "/appointments" 
+      path: "/appointments/schedule" 
     },
     { 
       name: "Staff", 
