@@ -136,25 +136,25 @@ const PatientTable = ({ patients }: PatientTableProps) => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem asChild>
-                          <Link to={`/patients/${patient.id}`} className="flex items-center">
+                          <Link to={`/patients`} className="flex items-center">
                             <EyeIcon className="mr-2 h-4 w-4" />
                             <span>View Details</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link to={`/medical-records/${patient.id}`} className="flex items-center">
+                          <Link to={`/medical-records`} className="flex items-center">
                             <FileText className="mr-2 h-4 w-4" />
                             <span>Medical Records</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link to={`/appointments/schedule/${patient.id}`} className="flex items-center">
+                          <Link to={`/appointments/schedule/`} className="flex items-center">
                             <CalendarClock className="mr-2 h-4 w-4" />
                             <span>Schedule Appointment</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link to={`/billing/${patient.id}`} className="flex items-center">
+                          <Link to={`/billing`} className="flex items-center">
                             <CreditCard className="mr-2 h-4 w-4" />
                             <span>Billing</span>
                           </Link>
