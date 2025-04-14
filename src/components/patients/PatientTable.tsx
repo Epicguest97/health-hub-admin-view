@@ -135,18 +135,18 @@ const PatientTable = ({ patients }: PatientTableProps) => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
+                        {/* <DropdownMenuItem asChild>
                           <Link to={`/patients`} className="flex items-center">
                             <EyeIcon className="mr-2 h-4 w-4" />
                             <span>View Details</span>
                           </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
+                        </DropdownMenuItem> */}
+                        {/* <DropdownMenuItem asChild>
                           <Link to={`/medical-records`} className="flex items-center">
                             <FileText className="mr-2 h-4 w-4" />
                             <span>Medical Records</span>
                           </Link>
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                         <DropdownMenuItem asChild>
                           <Link to={`/appointments/schedule/`} className="flex items-center">
                             <CalendarClock className="mr-2 h-4 w-4" />
