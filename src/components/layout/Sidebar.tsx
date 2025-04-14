@@ -40,11 +40,6 @@ const Sidebar = ({ className }: SidebarProps) => {
       path: "/register-patient" 
     },
     { 
-      name: "Medical Records", 
-      icon: <FileText className="h-5 w-5" />, 
-      path: "/medical-records" 
-    },
-    { 
       name: "Appointments", 
       icon: <CalendarClock className="h-5 w-5" />, 
       path: "/appointments" 
