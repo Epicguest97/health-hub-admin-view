@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "@/components/layout/MainLayout";
@@ -232,7 +231,7 @@ const ScheduleAppointment = () => {
   };
 
   return (
-    <MainLayout>
+    <MainLayout title="Schedule Appointment">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold">Schedule Appointment</h2>
