@@ -14,9 +14,9 @@ const Header = ({ title }: HeaderProps) => {
       <h1 className="text-2xl font-semibold">{title}</h1>
       
       <div className="flex items-center space-x-4">
-        <Button variant="ghost" size="icon" className="text-foreground">
+        {/* <Button variant="ghost" size="icon" className="text-foreground">
           <Bell className="h-5 w-5" />
-        </Button>
+        </Button> */}
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
