@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import MainLayout from "@/components/layout/MainLayout";
@@ -16,9 +15,6 @@ interface Appointment {
   status: string;
   reason: string;
   notes?: string;
-  patient?: { first_name: string; last_name: string } | null;
-  department?: { name: string } | null;
-  staff?: { first_name: string; last_name: string } | null;
 }
 
 const Appointments = () => {
@@ -32,29 +28,14 @@ const Appointments = () => {
 
   const fetchAppointments = async () => {
     try {
+      // Direct query to the appointments table without joins
       const { data, error } = await supabase
         .from('appointments')
-        .select(`
-          *,
-          patient(first_name, last_name),
-          department(name),
-          staff(first_name, last_name)
-        `);
+        .select('*');
       
       if (error) throw error;
       
-      // Type check and ensure data is properly formatted
-      const formattedData = data?.map(appointment => {
-        return {
-          ...appointment,
-          // Ensure these properties match the expected type
-          patient: appointment.patient && typeof appointment.patient === 'object' ? appointment.patient : null,
-          department: appointment.department && typeof appointment.department === 'object' ? appointment.department : null,
-          staff: appointment.staff && typeof appointment.staff === 'object' ? appointment.staff : null
-        };
-      }) as Appointment[];
-      
-      setAppointments(formattedData || []);
+      setAppointments(data || []);
     } catch (error: any) {
       toast({
         title: "Error fetching appointments",
@@ -88,16 +69,16 @@ const Appointments = () => {
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h3 className="font-medium">Patient</h3>
-              <p>{appointment.patient ? `${appointment.patient.first_name} ${appointment.patient.last_name}` : 'Unknown'}</p>
+              <h3 className="font-medium">Patient ID</h3>
+              <p>{appointment.patient_id}</p>
             </div>
             <div>
-              <h3 className="font-medium">Department</h3>
-              <p>{appointment.department ? appointment.department.name : 'Unknown'}</p>
+              <h3 className="font-medium">Department ID</h3>
+              <p>{appointment.department_id}</p>
             </div>
             <div>
-              <h3 className="font-medium">Staff</h3>
-              <p>{appointment.staff ? `${appointment.staff.first_name} ${appointment.staff.last_name}` : 'Unknown'}</p>
+              <h3 className="font-medium">Staff ID</h3>
+              <p>{appointment.staff_id}</p>
             </div>
             <div>
               <h3 className="font-medium">Date</h3>
