@@ -69,7 +69,7 @@ const Sidebar = ({ className }: SidebarProps) => {
     )}>
       <div className="flex items-center justify-between p-4 border-b">
         {!collapsed && (
-          <h1 className="font-bold text-lg text-primary">HealthAdmin</h1>
+          <h1 className="font-bold text-lg text-primary">CareNet</h1>
         )}
         <Button 
           variant="ghost" 
