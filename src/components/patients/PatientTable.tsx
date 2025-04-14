@@ -25,7 +25,7 @@ export interface Patient {
   first_name: string;
   last_name: string;
   email?: string;
-  phone?: string; // Changed from string to string | number to handle both types
+  phone?: string | number; // Explicitly allow both string and number types
   date_of_birth: string;
   gender: string;
   address?: string;

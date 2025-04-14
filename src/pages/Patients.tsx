@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import MainLayout from "@/components/layout/MainLayout";
@@ -27,7 +28,8 @@ const Patients = () => {
           throw error;
         }
         
-        setPatients(data as Patient[] || []);
+        // First cast to unknown, then to Patient[] to satisfy TypeScript
+        setPatients((data || []) as unknown as Patient[]);
       } catch (error: any) {
         toast({
           title: "Failed to load patients",

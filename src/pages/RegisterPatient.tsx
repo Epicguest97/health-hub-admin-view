@@ -85,10 +85,10 @@ const RegisterPatient = () => {
       // Format full address
       const fullAddress = `${data.address}, ${data.city}, ${data.state} ${data.zipCode}`;
       
-      // Convert phone to number if needed (or keep as string since we updated the interface)
-      const phoneValue = data.phone;
+      // Convert phone to a number for database compatibility
+      const phoneValue = data.phone ? parseInt(data.phone, 10) : undefined;
       
-      // Insert data into patients table - make sure we're passing a single object, not an array
+      // Insert data into patients table
       const { data: insertedPatient, error } = await supabase
         .from('patients')
         .insert({
@@ -102,7 +102,6 @@ const RegisterPatient = () => {
           emergency_contact: data.emergencyContactName,
           emergency_phone: data.emergencyContactPhone,
           allergies: data.allergies
-          // Note: Other fields like emergency_relation not in schema
         })
         .select();
       
