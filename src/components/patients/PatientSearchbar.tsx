@@ -40,10 +40,6 @@ const PatientSearchbar = ({ onSearch, onGenderFilter }: PatientSearchbarProps) =
             <SelectItem value="other">Other</SelectItem>
           </SelectContent>
         </Select>
-        <Button>
-          <Filter className="mr-2 h-4 w-4" />
-          Filter
-        </Button>
       </div>
     </div>
   );
