@@ -42,7 +42,7 @@ const UpcomingAppointments = () => {
     <Card className="col-span-2">
       <CardHeader>
         <CardTitle>Upcoming Appointments</CardTitle>
-        <CardDescription>You have {appointments.length} appointments today</CardDescription>
+        <CardDescription>{appointments.length} appointments today</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

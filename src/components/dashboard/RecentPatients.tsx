@@ -109,7 +109,7 @@ const RecentPatients = () => {
                 <TableCell>{patient.dateAdmitted}</TableCell>
                 <TableCell className="text-right">
                   <Button variant="ghost" size="icon" asChild>
-                    <Link to={`/patients/${patient.id}`}>
+                    <Link to={`/patients`}>
                       <EyeIcon className="h-4 w-4" />
                       <span className="sr-only">View patient</span>
                     </Link>
