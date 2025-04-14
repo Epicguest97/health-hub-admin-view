@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { CalendarClock, CreditCard } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
+
   Table, 
   TableBody, 
   TableCell, 
@@ -122,30 +124,42 @@ const StaffTable = ({ staffMembers }: StaffTableProps) => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem asChild>
+                      {/* <DropdownMenuItem asChild>
                         <Link to={`/staff/${staff.id}`} className="flex items-center">
                           <EyeIcon className="mr-2 h-4 w-4" />
                           <span>View Profile</span>
                         </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
+                      </DropdownMenuItem> */}
+                      {/* <DropdownMenuItem asChild>
                         <Link to={`/staff/edit/${staff.id}`} className="flex items-center">
                           <Settings className="mr-2 h-4 w-4" />
                           <span>Edit Details</span>
                         </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
+                      </DropdownMenuItem> */}
+                      {/* <DropdownMenuItem asChild>
                         <Link to={`/staff/schedule/${staff.id}`} className="flex items-center">
                           <Calendar className="mr-2 h-4 w-4" />
                           <span>Manage Schedule</span>
                         </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
+                      </DropdownMenuItem> */}
+                      {/* <DropdownMenuItem asChild>
                         <Link to={`/staff/records/${staff.id}`} className="flex items-center">
                           <FileText className="mr-2 h-4 w-4" />
                           <span>View Records</span>
                         </Link>
-                      </DropdownMenuItem>
+                      </DropdownMenuItem> */}
+                      <DropdownMenuItem asChild>
+                          <Link to={`/appointments/schedule/`} className="flex items-center">
+                            <CalendarClock className="mr-2 h-4 w-4" />
+                            <span>Schedule Appointment</span>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to={`/billing`} className="flex items-center">
+                            <CreditCard className="mr-2 h-4 w-4" />
+                            <span>Billing</span>
+                          </Link>
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
