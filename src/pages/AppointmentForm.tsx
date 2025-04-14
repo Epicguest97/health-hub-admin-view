@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import MainLayout from "@/components/layout/MainLayout";
@@ -31,13 +30,17 @@ const AppointmentForm = () => {
     setIsSubmitting(true);
 
     try {
+      // Ensure appointment date is in ISO format for PostgreSQL timestamp with time zone
+      const formattedDate = new Date(appointmentDate).toISOString();
+
       const { error } = await supabase
         .from('appointments')
         .insert({
           patient_id: patient.id,
           department_id: department.id,
           staff_id: staffMember.id,
-          appointment_date: appointmentDate,
+          appointment_date: formattedDate,
+          status: 'Scheduled', // Explicitly set for clarity, though it's the default
           reason,
           notes,
         });
