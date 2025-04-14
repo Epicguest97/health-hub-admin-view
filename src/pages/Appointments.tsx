@@ -16,9 +16,9 @@ interface Appointment {
   status: string;
   reason: string;
   notes?: string;
-  patient?: { first_name: string; last_name: string };
-  department?: { name: string };
-  staff?: { first_name: string; last_name: string };
+  patient?: { first_name: string; last_name: string } | null;
+  department?: { name: string } | null;
+  staff?: { first_name: string; last_name: string } | null;
 }
 
 const Appointments = () => {
@@ -43,7 +43,18 @@ const Appointments = () => {
       
       if (error) throw error;
       
-      setAppointments(data || []);
+      // Type check and ensure data is properly formatted
+      const formattedData = data?.map(appointment => {
+        return {
+          ...appointment,
+          // Ensure these properties match the expected type
+          patient: appointment.patient && typeof appointment.patient === 'object' ? appointment.patient : null,
+          department: appointment.department && typeof appointment.department === 'object' ? appointment.department : null,
+          staff: appointment.staff && typeof appointment.staff === 'object' ? appointment.staff : null
+        };
+      }) as Appointment[];
+      
+      setAppointments(formattedData || []);
     } catch (error: any) {
       toast({
         title: "Error fetching appointments",
@@ -78,15 +89,15 @@ const Appointments = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h3 className="font-medium">Patient</h3>
-              <p>{appointment.patient?.first_name} {appointment.patient?.last_name}</p>
+              <p>{appointment.patient ? `${appointment.patient.first_name} ${appointment.patient.last_name}` : 'Unknown'}</p>
             </div>
             <div>
               <h3 className="font-medium">Department</h3>
-              <p>{appointment.department?.name}</p>
+              <p>{appointment.department ? appointment.department.name : 'Unknown'}</p>
             </div>
             <div>
               <h3 className="font-medium">Staff</h3>
-              <p>{appointment.staff?.first_name} {appointment.staff?.last_name}</p>
+              <p>{appointment.staff ? `${appointment.staff.first_name} ${appointment.staff.last_name}` : 'Unknown'}</p>
             </div>
             <div>
               <h3 className="font-medium">Date</h3>
