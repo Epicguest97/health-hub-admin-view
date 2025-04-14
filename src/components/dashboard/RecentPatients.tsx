@@ -61,7 +61,7 @@ const RecentPatients = () => {
       <CardHeader>
         <CardTitle>Recent Patients</CardTitle>
         <CardDescription>
-          You have {recentPatients.length} recent patients
+          x{recentPatients.length} recent patients
         </CardDescription>
       </CardHeader>
       <CardContent>
